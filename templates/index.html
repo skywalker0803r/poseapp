@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="UTF-8" />
+  <title>棒球投手姿勢即時分析儀表板</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  
+  <!-- Bootstrap CSS -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" />
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" rel="stylesheet" />
+  
+  <!-- 自訂 CSS -->
+  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+
+<nav class="navbar navbar-expand-lg navbar-dark bg-primary mb-4 shadow-sm">
+  <div class="container">
+    <a class="navbar-brand" href="#">⚾ 投手姿勢分析</a>
+  </div>
+</nav>
+
+<div class="container">
+
+  <!-- 上傳區塊 -->
+  <div class="card p-4 mb-4">
+    <h4 class="card-title mb-3">上傳影片以開始分析</h4>
+    <form id="upload-form" class="d-flex gap-3 align-items-center flex-wrap">
+      <input class="form-control form-control-lg" type="file" id="video-upload" accept="video/*" required style="max-width: 300px;" />
+      <button type="submit" class="btn btn-primary btn-lg px-4">開始上傳</button>
+
+      <!-- Loading spinner -->
+      <div id="loading-spinner" class="spinner-border text-primary" role="status" aria-hidden="true"></div>
+      <span id="status-text" class="ms-2"></span>
+    </form>
+  </div>
+
+  <div class="row g-4">
+    <!-- 左側影片區 -->
+    <div class="col-md-6">
+      <div class="card p-3">
+        <h5 class="card-title mb-3">投手影片串流 (含骨架標記)</h5>
+        <img id="video-stream" width="100%" height="auto" />
+        <div class="mt-4">
+          <label for="joint-select" class="form-label fw-semibold">選擇要追蹤的關節</label>
+          <select id="joint-select" class="form-select form-select-lg">
+            {% for idx, name in joint_names.items() %}
+              <option value="{{ idx }}">{{ idx }}: {{ name }}</option>
+            {% endfor %}
+          </select>
+        </div>
+      </div>
+    </div>
+
+    <!-- 右側折線圖區 -->
+    <div class="col-md-6">
+      <div class="card p-4">
+        <h5 id="chart-title" class="card-title mb-4">關節位置變化 (x/y/z)</h5>
+        
+        <!-- 即時座標數值 -->
+        <div class="d-flex justify-content-around mb-3">
+          <div class="text-danger joint-value" id="val-x">X: --</div>
+          <div class="text-success joint-value" id="val-y">Y: --</div>
+          <div class="text-primary joint-value" id="val-z">Z: --</div>
+        </div>
+
+        <canvas id="joint-chart" height="320"></canvas>
+      </div>
+    </div>
+  </div>
+
+  <!-- 姿勢分析結果區塊 -->
+  <div class="row mt-4">
+    <div class="col-12">
+      <div class="card p-4 text-center">
+        <h4 class="card-title mb-3">
+          <i class="bi bi-graph-up-arrow text-primary me-2"></i>姿勢分析結果
+        </h4>
+        <div id="pose-status" class="fs-5 fw-semibold text-dark">
+          分析尚未開始，請上傳影片以開始分析。
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 相似度分析結果區塊 -->
+  <div class="row mt-4">
+    <!-- 左側：文字分析 -->
+    <div class="col-md-6">
+      <div class="card p-4 text-center match-height">
+        <h4 class="card-title mb-3">
+          <i class="bi bi-check-circle text-success me-2"></i>標準動作相似度分析
+        </h4>
+        <div id="start_similarity" class="fs-5 fw-semibold text-dark">
+          起手姿勢相似度: 尚未分析
+        </div>
+        <div id="max_start_similarity" class="fs-6 text-muted mt-1">
+          起手姿勢最高相似度: 尚未分析
+        </div>
+        <div id="end_similarity" class="fs-5 fw-semibold text-dark mt-3">
+          結束姿勢相似度: 尚未分析
+        </div>
+        <div id="max_end_similarity" class="fs-6 text-muted mt-1">
+          結束姿勢最高相似度: 尚未分析
+        </div>
+      </div>
+    </div>
+
+    <!-- 右側：即時線圖 -->
+    <div class="col-md-6">
+      <div class="card p-4 match-height">
+        <h5 class="card-title text-center">相似度變化圖</h5>
+        <canvas id="similarityChart" height="250"></canvas>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<!-- 依賴腳本 -->
+<script src="https://cdn.socket.io/4.6.1/socket.io.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
+<!-- 自訂 JS -->
+<script src="{{ url_for('static', filename='app.js') }}"></script>
+
+</body>
+</html>

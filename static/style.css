@@ -1,0 +1,28 @@
+body {
+  background: #f8f9fa;
+}
+#video-stream {
+  border-radius: 8px;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+  background: #000;
+  height: 320px;
+}
+.card {
+  box-shadow: 0 6px 18px rgba(0,0,0,0.1);
+  border-radius: 12px;
+}
+.joint-value {
+  font-weight: 600;
+  font-size: 1.2rem;
+}
+#loading-spinner {
+  display: none;
+}
+#joint-chart {
+  height: 320px;
+}
+.match-height {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+}
